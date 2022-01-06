@@ -60,6 +60,8 @@ If everything is done properly, you will see a popup menu with "Success" and a g
 
 Project Platform Services are services that you want to be deployed on all the Kubernetes clusters associated with the Project, in the corresponding namespace.
 
+### By using catalog
+
 1. If not already selected, click the _Platform Services_ tab in the _Projects > truck-demo_ window
 
 2. Click the button in the middle of the screen labeled _View Catalog_ to view the catalog of platform services.
@@ -93,6 +95,14 @@ This displays the list of default catalog platform services that are easily depl
 * This will auto-populate the _ID_ textbox with the same entry.
 * Review configuration options but DO NOT make any additional changes.
 * Click _Deploy_ in the upper right hand corner to deploy and instance of Cassandra
+
+### By using KUDO
+
+```
+kubectl kudo init --wait
+kubectl kudo install cassandra --instance cassandra -n ${NAMESPACE}
+kubectl kudo install kafka --instance kafka -n ${NAMESPACE} -p ZOOKEEPER_URI="zookeeper-zookeeper-0.zookeeper-hs:2181,zookeeper-zookeeper-1.zookeeper-hs:2181,zookeeper-zookeeper-2.zookeeper-hs:2181"
+```
 
 4. Wait until all Three Data Services (Zookeeper, Kafka, Cassandra) are completely deployed.
 
