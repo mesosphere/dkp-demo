@@ -1,4 +1,4 @@
-# GitOps DKP Truck Efficiency Demonstration
+# GitOps DKP Truck Efficiency Demonstration for DKP 2.x
 
 This tutorial was designed to roll-out the truck efficiency demo. It is meant to show how easy it is to use DKP.
 

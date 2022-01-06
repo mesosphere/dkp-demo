@@ -1,4 +1,4 @@
-
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -10,6 +10,7 @@ spec:
   ports:
     - port: 8080
       targetPort: 8080
+      name: data-api
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -68,21 +69,36 @@ spec:
       terminationGracePeriodSeconds: 1
 status: {}
 ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
 metadata:
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/rewrite-target: /
-  name: truck-data-api-ingress
+  name: truck-data-api-ingressroute
 spec:
-  rules:
-  - http:
-      paths:
-      - path: /data-api
-        pathType: Prefix
-        backend:
-          service:
-            name: truck-data-api-svc
-            port: 
-              number: 8080
+  routes:
+    - match: PathPrefix(`/data-api`)
+      kind: Rule
+      services:
+        - name: truck-data-api-svc
+          port: data-api
+      middlewares:
+        - name: data-api-stripprefix
+  tls:
+    secretName: tls-data-api
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: data-api-stripprefix
+spec:
+  stripPrefix:
+    prefixes:
+      - /data-api
+    forceSlash: true
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tls-data-api
+data:
+  tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0=
+  tls.key: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCi0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0=

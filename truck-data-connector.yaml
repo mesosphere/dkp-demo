@@ -68,22 +68,39 @@ spec:
   ports:
     - port: 8000
       targetPort: 8000
+      name: data-connector
 ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
 metadata:
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/rewrite-target: /
-  name: truck-data-connector-ingress
+  name: truck-data-connector-ingressroute
 spec:
-  rules:
-  - http:
-      paths:
-      - path: /data-connector
-        pathType: Prefix
-        backend:
-          service:
-            name: truck-data-connector-svc
-            port: 
-              number: 8000
+  routes:
+    - match: PathPrefix(`/data-connector`)
+      kind: Rule
+      services:
+        - name: truck-data-connector-svc
+          port: data-connector
+      middlewares:
+        - name: data-connector-stripprefix
+  tls:
+    secretName: tls-data-connector
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: data-connector-stripprefix
+spec:
+  stripPrefix:
+    prefixes:
+      - /data-connector
+    forceSlash: true
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tls-data-connector
+data:
+  tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0=
+  tls.key: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCi0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0=
+
