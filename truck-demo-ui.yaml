@@ -58,22 +58,56 @@ spec:
       securityContext: {}
       terminationGracePeriodSeconds: 1
 status: {}
+#---
+#apiVersion: networking.k8s.io/v1
+#kind: Ingress
+#metadata:
+#  annotations:
+#    kubernetes.io/ingress.class: traefik
+#    traefik.ingress.kubernetes.io/rewrite-target: /
+#  name: truck-demo-ui
+#spec:
+#  rules:
+#  - http:
+#      paths:
+#      - path: /demo-ui
+#        pathType: Prefix
+#        backend:
+#          service:
+#            name: truck-demo-ui-svc
+#            port: 
+#              number: 80
 ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
 metadata:
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/rewrite-target: /
-  name: truck-demo-ui
+  name: truck-data-connector-ingressroute
 spec:
-  rules:
-  - http:
-      paths:
-      - path: /demo-ui
-        pathType: Prefix
-        backend:
-          service:
-            name: truck-demo-ui-svc
-            port: 
-              number: 80
+  routes:
+    - match: PathPrefix(`/data-connector`)
+      kind: Rule
+      services:
+        - name: truck-data-connector-svc
+          port: data-connector
+      middlewares:
+        - name: data-connector-stripprefix
+  tls:
+    secretName: tls-data-connector
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: data-connector-stripprefix
+spec:
+  stripPrefix:
+    prefixes:
+      - /data-connector
+    forceSlash: true
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tls-data-connector
+data:
+  tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0=
+  tls.key: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCi0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0=
