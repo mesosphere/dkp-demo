@@ -165,7 +165,9 @@ Kommander Projects can be configured with GitOps based Continuous Deployments fo
 
 * ID (name): `truck-demo-microservices`
 * Repository URL: `https://github.com/mesosphere/dkp-demo/`
-* Branch/Tag: `main`
+* Branch/Tag: 
+  * for DKP v1.x `main`
+  * for DKP v2.x `dkpv2`
 * Path:
 * Primary Git Secret: `None`
 
