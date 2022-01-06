@@ -101,6 +101,7 @@ This displays the list of default catalog platform services that are easily depl
 ```
 kubectl kudo init --wait
 kubectl kudo install cassandra --instance cassandra -n ${NAMESPACE}
+kubectl kudo install zookeeper --instance zookeeper -n ${NAMESPACE}
 kubectl kudo install kafka --instance kafka -n ${NAMESPACE} -p ZOOKEEPER_URI="zookeeper-zookeeper-0.zookeeper-hs:2181,zookeeper-zookeeper-1.zookeeper-hs:2181,zookeeper-zookeeper-2.zookeeper-hs:2181"
 ```
 
